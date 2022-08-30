@@ -15,6 +15,7 @@ void IServo::pulse(int _pulsewidth)
 }
 
 
+//包含初始舵机复位（从90°开始）
 void IServo::init()
 {
 	pinMode(servo,OUTPUT);
@@ -22,7 +23,8 @@ void IServo::init()
 	
 	//初始复位
 	angle = 90;
-	int pulsewidth = (90*(max_PWM-min_PWM)/angle_range)+min_PWM;
+	int pulsewidth = (90.0*(max_PWM-min_PWM)/angle_range)+min_PWM;
+	//注意Arduino Uno是8位机，int是2字节，中间变量可能超出范围！
 	for(int i=0;i<60;i++) pulse(pulsewidth);
 
 }
@@ -32,7 +34,7 @@ int IServo::rotating(float _des_angle)
 {
 	if(angle<0 || angle>angle_range)
 		return 0;
-	int pulsewidth = (_des_angle*(max_PWM-min_PWM)/angle_range)+min_PWM;
+	int pulsewidth = (float(_des_angle)*(max_PWM-min_PWM)/angle_range)+min_PWM;
 	
 	float delta_angle = _des_angle-angle;
 	delta_angle = abs(delta_angle);//Arduino的abs不能在里面执行算术运算
